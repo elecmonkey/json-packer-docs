@@ -7,12 +7,15 @@
         <div class="container mx-auto px-6 lg:px-8 h-full">
           <div class="grid xl:grid-cols-2 gap-8 xl:gap-12 items-center h-full">
             <!-- 左侧内容区 -->
-            <div class="flex flex-col space-y-6 md:space-y-8 py-4 md:py-8 relative">
+            <div class="flex flex-col space-y-6 md:space-y-8 pt-0 pb-1 sm:pt-1 sm:pb-2 md:py-8 relative">
               <!-- 主标题区域 -->
               <div class="space-y-4 md:space-y-6">
-                <div class="inline-flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-full border border-blue-100">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span class="text-sm font-medium text-blue-700">高性能 JSON 压缩</span>
+                <!-- Badge：小屏幕居中，大屏幕左对齐 -->
+                <div class="flex justify-center md:justify-start">
+                  <div class="inline-flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-full border border-blue-100">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-medium text-blue-700">高性能 JSON 压缩</span>
+                  </div>
                 </div>
                 
                 <!-- 桌面端：图标和文字水平布局 -->
