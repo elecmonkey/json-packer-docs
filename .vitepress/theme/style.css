@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* 强制标题样式生效 */
+.home-layout h1 {
+  font-size: 4rem !important; /* 64px */
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em !important;
+}
+
+@media (min-width: 1024px) {
+  .home-layout h1 {
+    font-size: 6rem !important; /* 96px */
+  }
+}
