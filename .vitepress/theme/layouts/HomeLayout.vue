@@ -202,7 +202,7 @@ const webTab = ref<HTMLButtonElement>()
 // 获取当前选项卡对应的命令
 const getCommand = () => {
   if (activeTab.value === 'rust') {
-    return 'cargo add json-packer-core'
+    return 'cargo add json-packer'
   }
   
   const packageName = activeTab.value === 'node' ? 'json-packer-napi' : 'json-packer-wasm'

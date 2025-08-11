@@ -5,14 +5,14 @@ JSON Packer 的 Rust 核心库提供了轻量、可逆的 JSON 二进制压缩�
 ## 安装
 
 ```bash
-cargo add json-packer-core
+cargo add json-packer
 ```
 
 在 `Cargo.toml` 中添加依赖：
 
 ```toml
 [dependencies]
-json-packer-core = "0.1.0"
+json-packer = "0.1.0"
 ```
 
 ## API
@@ -45,7 +45,7 @@ pub struct CompressOptions {
 ### 基本压缩
 
 ```rust
-use json_packer_core::{compress_to_base64, decompress_from_base64, CompressOptions};
+use json_packer::{compress_to_base64, decompress_from_base64, CompressOptions};
 use serde_json::json;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -71,7 +71,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### 启用字符串值池
 
 ```rust
-use json_packer_core::{compress_to_bytes, decompress_from_bytes, CompressOptions};
+use json_packer::{compress_to_bytes, decompress_from_bytes, CompressOptions};
 use serde_json::json;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
