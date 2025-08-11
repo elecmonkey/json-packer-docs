@@ -1,0 +1,44 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6D28D9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="jsonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F3E8FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E9D5FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded rectangle -->
+  <rect x="4" y="4" width="120" height="120" rx="28" ry="28" fill="url(#gradient)" stroke="#5B21B6" stroke-width="4"/>
+  
+  <!-- JSON text -->
+  <text x="64" y="38" font-family="monospace" font-size="24" font-weight="bold" fill="url(#jsonGradient)" text-anchor="middle">JSON</text>
+  
+  <!-- Left bracket - larger and centered -->
+  <path d="M20 48 Q14 48 14 54 L14 64 Q14 68 10 68 Q14 68 14 72 L14 82 Q14 88 20 88" 
+        stroke="url(#jsonGradient)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Right bracket - larger and centered -->
+  <path d="M108 48 Q114 48 114 54 L114 64 Q114 68 118 68 Q114 68 114 72 L114 82 Q114 88 108 88" 
+        stroke="url(#jsonGradient)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Left side - many data blocks (representing lots of data) -->
+  <rect x="28" y="56" width="16" height="6" rx="2" fill="#F3E8FF" opacity="0.9"/>
+  <rect x="28" y="64" width="14" height="5" rx="2" fill="#E9D5FF" opacity="0.8"/>
+  <rect x="28" y="71" width="18" height="4" rx="2" fill="#DDD6FE" opacity="0.8"/>
+  <rect x="28" y="77" width="12" height="5" rx="2" fill="#F3E8FF" opacity="0.7"/>
+  <rect x="28" y="84" width="15" height="4" rx="2" fill="#E9D5FF" opacity="0.7"/>
+  
+  <!-- Arrow pointing right (compression direction) -->
+  <path d="M52 68 L72 68 M66 60 L74 68 L66 76" 
+        stroke="#F3E8FF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Right side - single small compressed block -->
+  <rect x="85" y="61" width="12" height="12" rx="3" fill="#F3E8FF"/>
+  <circle cx="91" cy="67" r="2" fill="#6D28D9"/>
+  
+  <!-- Pack label -->
+  <text x="64" y="108" font-family="sans-serif" font-size="18" font-weight="600" fill="#F3E8FF" text-anchor="middle">PACKER</text>
+</svg>
