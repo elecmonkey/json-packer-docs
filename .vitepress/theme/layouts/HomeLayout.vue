@@ -51,71 +51,74 @@
                   <!-- 主要内容区域 -->
                   <div class="flex-1">
                     <!-- 头部区域 -->
-                    <div class="flex items-stretch justify-between bg-slate-50 border-b border-slate-200 px-2 py-2">
-                      <!-- 左侧：平台选项卡 -->
-                      <div class="flex items-stretch gap-2 relative">
-                        <!-- 滑动背景块 -->
-                        <div 
-                          class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
-                          :style="getSliderStyle()"
-                        ></div>
-                        
-                        <button 
-                          @click="activeTab = 'rust'"
-                          class="tab-button relative z-10"
-                          :class="[activeTab === 'rust' ? 'tab-active' : 'tab-inactive']"
-                          ref="rustTab"
-                        >
-                          🦀 Rust
-                        </button>
-                        <button 
-                          @click="activeTab = 'node'"
-                          class="tab-button relative z-10"
-                          :class="[activeTab === 'node' ? 'tab-active' : 'tab-inactive']"
-                          ref="nodeTab"
-                        >
-                          📦 Node
-                        </button>
-                        <button 
-                          @click="activeTab = 'web'"
-                          class="tab-button relative z-10"
-                          :class="[activeTab === 'web' ? 'tab-active' : 'tab-inactive']"
-                          ref="webTab"
-                        >
-                          🌐 WASM
-                        </button>
-                      </div>
-                      
-                      <!-- 右侧：包管理器选择 (仅在非Rust时显示) -->
-                      <div v-if="activeTab !== 'rust'" class="flex items-stretch gap-2 relative">
-                        <!-- 滑动背景块 -->
-                        <div 
-                          class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
-                          :style="getPkgSliderStyle()"
-                        ></div>
-                        
-                        <button 
-                          @click="packageManager = 'pnpm'"
-                          class="pkg-button relative z-10"
-                          :class="[packageManager === 'pnpm' ? 'pkg-active' : 'pkg-inactive']"
-                        >
-                          pnpm
-                        </button>
-                        <button 
-                          @click="packageManager = 'npm'"
-                          class="pkg-button relative z-10"
-                          :class="[packageManager === 'npm' ? 'pkg-active' : 'pkg-inactive']"
-                        >
-                          npm
-                        </button>
-                        <button 
-                          @click="packageManager = 'yarn'"
-                          class="pkg-button relative z-10"
-                          :class="[packageManager === 'yarn' ? 'pkg-active' : 'pkg-inactive']"
-                        >
-                          yarn
-                        </button>
-                      </div>
+                    <div class="bg-slate-50 border-b border-slate-200 px-2 py-2">
+                      <!-- 响应式布局容器 -->
+                       <div class="flex flex-col sm:flex-row sm:items-stretch sm:justify-between gap-2">
+                         <!-- 平台选项卡 -->
+                         <div class="flex items-stretch gap-2 relative w-full sm:w-auto">
+                           <!-- 滑动背景块 -->
+                           <div 
+                             class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
+                             :style="getSliderStyle()"
+                           ></div>
+                           
+                           <button 
+                             @click="activeTab = 'rust'"
+                             class="tab-button relative z-10 flex-1 sm:flex-none"
+                             :class="[activeTab === 'rust' ? 'tab-active' : 'tab-inactive']"
+                             ref="rustTab"
+                           >
+                             🦀 Rust
+                           </button>
+                           <button 
+                             @click="activeTab = 'node'"
+                             class="tab-button relative z-10 flex-1 sm:flex-none"
+                             :class="[activeTab === 'node' ? 'tab-active' : 'tab-inactive']"
+                             ref="nodeTab"
+                           >
+                             📦 Node
+                           </button>
+                           <button 
+                             @click="activeTab = 'web'"
+                             class="tab-button relative z-10 flex-1 sm:flex-none"
+                             :class="[activeTab === 'web' ? 'tab-active' : 'tab-inactive']"
+                             ref="webTab"
+                           >
+                             🌐 WASM
+                           </button>
+                         </div>
+                         
+                         <!-- 包管理器选择 (仅在非Rust时显示) -->
+                         <div v-if="activeTab !== 'rust'" class="flex items-stretch gap-2 relative w-full sm:w-auto">
+                           <!-- 滑动背景块 -->
+                           <div 
+                             class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
+                             :style="getPkgSliderStyle()"
+                           ></div>
+                           
+                           <button 
+                             @click="packageManager = 'pnpm'"
+                             class="pkg-button relative z-10 flex-1 sm:flex-none"
+                             :class="[packageManager === 'pnpm' ? 'pkg-active' : 'pkg-inactive']"
+                           >
+                             pnpm
+                           </button>
+                           <button 
+                             @click="packageManager = 'npm'"
+                             class="pkg-button relative z-10 flex-1 sm:flex-none"
+                             :class="[packageManager === 'npm' ? 'pkg-active' : 'pkg-inactive']"
+                           >
+                             npm
+                           </button>
+                           <button 
+                             @click="packageManager = 'yarn'"
+                             class="pkg-button relative z-10 flex-1 sm:flex-none"
+                             :class="[packageManager === 'yarn' ? 'pkg-active' : 'pkg-inactive']"
+                           >
+                             yarn
+                           </button>
+                         </div>
+                       </div>
                     </div>
                     
                     <!-- 代码区域 -->
