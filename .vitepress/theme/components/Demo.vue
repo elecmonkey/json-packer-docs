@@ -360,19 +360,24 @@ onMounted(async () => {
     
     wasmInitialized.value = true
     
-    // 等待一个微任务，确保 WASM 完全初始化
+    // 等待多个微任务
+    await nextTick()
     await nextTick()
     
-    // 预热 WASM 模块，但不计时
+    // 预热 WASM 模块
     try {
       const warmupOptions = new wasmModule.Options(true, 3, 4)
-      wasmModule.compress_to_base64('{"warmup": true}', warmupOptions)
+      
+      for (let i = 0; i < 5; i++) {
+        wasmModule.compress_to_base64(`{"warmup": ${i}, "data": "test"}`, warmupOptions)
+        wasmModule.decompress_from_base64(wasmModule.compress_to_base64(`{"warmup": ${i}}`, warmupOptions))
+      }
     } catch (warmupError) {
       console.warn('WASM 预热失败:', warmupError)
     }
     
-    // 现在进行真正的初始压缩
-    handleCompress()
+    setTimeout(handleCompress, 0)
+  
   } catch (error) {
     console.error('WASM 初始化失败:', error)
     // 添加更详细的错误信息
