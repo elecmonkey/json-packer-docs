@@ -86,7 +86,7 @@
                          <div class="flex items-stretch gap-2 relative w-full sm:w-auto">
                            <!-- 滑动背景块 -->
                            <div 
-                             class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
+                             class="absolute top-0 bottom-0 bg-slate-200 rounded transition-all duration-300 ease-out"
                              :style="getSliderStyle()"
                            ></div>
                            
@@ -120,7 +120,7 @@
                          <div v-if="activeTab !== 'rust'" class="flex items-stretch gap-2 relative w-full sm:w-auto">
                            <!-- 滑动背景块 -->
                            <div 
-                             class="absolute top-0 bottom-0 bg-slate-700 rounded transition-all duration-300 ease-out"
+                             class="absolute top-0 bottom-0 bg-slate-200 rounded transition-all duration-300 ease-out"
                              :style="getPkgSliderStyle()"
                            ></div>
                            
@@ -329,7 +329,7 @@ const getPkgSliderStyle = () => {
 
 /* 选项卡激活状态 */
 .tab-active {
-  color: white !important;
+  color: #0f172a !important;
 }
 
 /* 选项卡非激活状态 */
@@ -361,7 +361,7 @@ const getPkgSliderStyle = () => {
 
 /* 包管理器激活状态 */
 .pkg-active {
-  color: white !important;
+  color: #0f172a !important;
 }
 
 /* 包管理器非激活状态 */
