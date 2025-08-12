@@ -18,13 +18,22 @@ export default defineConfig({
     logo: '/favicon-simple.svg',
     nav: [
       { text: '首页', link: '/' },
-      { text: '快速开始', link: '/guide/' },
       { 
-        text: '平台', 
+        text: '快速开始',
         items: [
-          { text: 'Rust Core', link: '/platform/rust' },
-          { text: 'Node API', link: '/platform/node' },
-          { text: 'WebAssembly', link: '/platform/wasm' }
+          { text: '介绍', link: '/guide/' },
+          { text: 'Rust Core', link: '/guide/rust' },
+          { text: 'Node API', link: '/guide/node' },
+          { text: 'WebAssembly', link: '/guide/wasm' }
+        ]
+      },
+      { 
+        text: '工作原理',
+        items: [
+          { text: '介绍', link: '/mechanism/' },
+          { text: '压缩原理', link: '/mechanism/principles' },
+          { text: '二进制格式', link: '/mechanism/binary-format' },
+          { text: '具体实现', link: '/mechanism/implementation' }
         ]
       },
       { text: '作者 Blog', link: 'https://www.elecmonkey.com', target: '_blank' }
@@ -36,17 +45,20 @@ export default defineConfig({
           text: '快速开始',
           items: [
             { text: '介绍', link: '/guide/' },
-            { text: '安装', link: '/guide/installation' }
+            { text: 'Rust Core', link: '/guide/rust' },
+            { text: 'Node API', link: '/guide/node' },
+            { text: 'WebAssembly', link: '/guide/wasm' }
           ]
         }
       ],
-      '/platform/': [
+      '/mechanism/': [
         {
-          text: '平台支持',
+          text: '工作原理',
           items: [
-            { text: 'Rust Core', link: '/platform/rust' },
-            { text: 'Node API', link: '/platform/node' },
-            { text: 'WebAssembly', link: '/platform/wasm' }
+            { text: '介绍', link: '/mechanism/' },
+            { text: '压缩原理', link: '/mechanism/principles' },
+            { text: '二进制格式', link: '/mechanism/binary-format' },
+            { text: '具体实现', link: '/mechanism/implementation' }
           ]
         }
       ]
