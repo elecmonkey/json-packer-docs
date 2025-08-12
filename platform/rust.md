@@ -8,7 +8,7 @@ JSON Packer 的 Rust 核心库提供了轻量、可逆的 JSON 二进制压缩�
 cargo add json-packer
 ```
 
-在 `Cargo.toml` 中添加依赖：
+或者在 `Cargo.toml` 中添加依赖：
 
 ```toml
 [dependencies]

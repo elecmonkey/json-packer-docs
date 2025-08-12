@@ -4,7 +4,16 @@
 
 ## Rust
 
-敬请期待
+```bash
+cargo add json-packer
+```
+
+或者在 `Cargo.toml` 中添加依赖：
+
+```toml
+[dependencies]
+json-packer = "0.1.0"
+```
 
 ## Node.js
 
