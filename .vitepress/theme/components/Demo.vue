@@ -97,7 +97,7 @@
     <!-- 压缩率显示 - 单独一行 -->
     <div class="px-6 py-4 bg-slate-50 border-t border-slate-200">
       <div class="flex justify-center items-center gap-4">
-        <div v-if="compressionRatio !== null && !hasError" class="inline-flex items-center gap-2 px-6 py-3 bg-green-50 border border-green-200 rounded-lg">
+        <div v-if="compressionRatio !== null && !hasError" class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
           <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
           </svg>
@@ -111,7 +111,7 @@
         </div>
         
         <!-- 用时显示 -->
-        <div v-if="compressTime !== null || decompressTime !== null" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div v-if="compressTime !== null || decompressTime !== null" class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
           <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
@@ -121,9 +121,10 @@
           </span>
         </div>
       </div>
-      <div class="text-xs text-slate-400 mt-3 flex justify-center">
-              <p>💡 压缩率按二进制大小计算，Base64 编码会有约 33% 的大小膨胀</p>
-            </div>
+      <div class="text-xs text-slate-400 mt-3 text-center">
+        <p>💡 压缩率按二进制大小计算，Base64 编码会有约 33% 的大小膨胀。</p>
+        <p>压缩、解压均会自动运行800次取平均显示时间。</p>
+      </div>
     </div>
 
 
@@ -216,81 +217,8 @@ const inputJson = ref(`{
       "currency": "CNY",
       "subscription": "Standard",
       "account_type": "Business"
-    },
-    {
-      "id": "user_005",
-      "name": "孙七",
-      "email": "sunqi@company.com",
-      "role": "Developer",
-      "department": "Technology",
-      "status": "Active",
-      "city": "Beijing",
-      "country": "China",
-      "timezone": "Asia/Shanghai",
-      "language": "Chinese",
-      "currency": "CNY",
-      "subscription": "Standard",
-      "account_type": "Business"
-    },
-    {
-      "id": "user_006",
-      "name": "周八",
-      "email": "zhouba@company.com",
-      "role": "Designer",
-      "department": "Design",
-      "status": "Active",
-      "city": "Shenzhen",
-      "country": "China",
-      "timezone": "Asia/Shanghai",
-      "language": "Chinese",
-      "currency": "CNY",
-      "subscription": "Premium",
-      "account_type": "Business"
-    },
-    {
-      "id": "user_007",
-      "name": "吴九",
-      "email": "wujiu@company.com",
-      "role": "Designer",
-      "department": "Design",
-      "status": "Inactive",
-      "city": "Guangzhou",
-      "country": "China",
-      "timezone": "Asia/Shanghai",
-      "language": "Chinese",
-      "currency": "CNY",
-      "subscription": "Basic",
-      "account_type": "Personal"
-    },
-    {
-      "id": "user_008",
-      "name": "郑十",
-      "email": "zhengshi@company.com",
-      "role": "Analyst",
-      "department": "Marketing",
-      "status": "Active",
-      "city": "Shanghai",
-      "country": "China",
-      "timezone": "Asia/Shanghai",
-      "language": "Chinese",
-      "currency": "CNY",
-      "subscription": "Premium",
-      "account_type": "Business"
     }
-  ],
-  "metadata": {
-    "total_users": 8,
-    "active_users": 7,
-    "inactive_users": 1,
-    "last_updated": "2024-01-15T14:30:00+08:00",
-    "api_version": "v1.2",
-    "organization": {
-      "name": "Tech Company Ltd",
-      "country": "China",
-      "timezone": "Asia/Shanghai",
-      "currency": "CNY"
-    }
-  }
+  ]
 }`)
 
 const compressedData = ref('')
@@ -360,23 +288,7 @@ onMounted(async () => {
     
     wasmInitialized.value = true
     
-    // 等待多个微任务
-    await nextTick()
-    await nextTick()
-    
-    // 预热 WASM 模块
-    try {
-      const warmupOptions = new wasmModule.Options(true, 3, 4)
-      
-      for (let i = 0; i < 5; i++) {
-        wasmModule.compress_to_base64(`{"warmup": ${i}, "data": "test"}`, warmupOptions)
-        wasmModule.decompress_from_base64(wasmModule.compress_to_base64(`{"warmup": ${i}}`, warmupOptions))
-      }
-    } catch (warmupError) {
-      console.warn('WASM 预热失败:', warmupError)
-    }
-    
-    setTimeout(handleCompress, 0)
+    handleCompress();
   
   } catch (error) {
     console.error('WASM 初始化失败:', error)
@@ -397,9 +309,6 @@ const handleCompress = () => {
     hasError.value = false
     errorMessage.value = ''
     
-    // 开始计时
-    const startTime = performance.now()
-    
     // 创建压缩选项
     const options = new wasmModule.Options(
       enableValuePool.value,
@@ -407,44 +316,59 @@ const handleCompress = () => {
       poolMinStringLen.value
     )
     
-    // 压缩为二进制和 Base64
+    // 先执行一次获取结果
     const compressedBinary = wasmModule.compress_to_bytes(inputJson.value, options)
     const compressed = wasmModule.compress_to_base64(inputJson.value, options)
     
-    // 结束计时
-    const endTime = performance.now()
-    compressTime.value = endTime - startTime
-    decompressTime.value = null // 清除解压缩时间，只显示最新操作时间
+    // 使用setTimeout分批执行800次测试以计算平均时间
+    const iterations = 800
+    const batchSize = 50 // 每批执行50次
+    const batches = Math.ceil(iterations / batchSize)
+    let totalElapsedTime = 0
+    let currentBatch = 0
     
-    compressedBytes.value = compressedBinary
-    compressedData.value = compressed
-    
-    // 解压验证
-    const decompressed = wasmModule.decompress_from_base64(compressed)
-    decompressedData.value = decompressed
-    
-    // 获取池值（如果启用）
-    if (enableValuePool.value) {
-      try {
-        // 这里需要根据实际的 WASM API 来获取池值
-        // 暂时使用模拟数据
-        poolValues.value = ['Shanghai', 'China', 'reading', 'swimming', 'coding']
-      } catch (poolError) {
-        console.warn('获取池值失败:', poolError)
-        poolValues.value = []
+    const processBatch = () => {
+      if (currentBatch < batches) {
+        const start = performance.now()
+        const startIndex = currentBatch * batchSize
+        const endIndex = Math.min(startIndex + batchSize, iterations)
+        
+        // 执行一批测试
+        for (let i = startIndex; i < endIndex; i++) {
+          wasmModule.compress_to_bytes(inputJson.value, options)
+          wasmModule.compress_to_base64(inputJson.value, options)
+        }
+        
+        const end = performance.now()
+        totalElapsedTime += (end - start)
+        currentBatch++
+        
+        // 使用setTimeout让出主线程控制权
+        setTimeout(processBatch, 0)
+      } else {
+        // 所有批次完成，更新UI
+        compressTime.value = totalElapsedTime / iterations
+        decompressTime.value = null // 清除解压缩时间，只显示最新操作时间
+        
+        compressedBytes.value = compressedBinary
+        compressedData.value = compressed
+        
+        // 解压验证
+        const decompressed = wasmModule.decompress_from_base64(compressed)
+        decompressedData.value = decompressed
       }
-    } else {
-      poolValues.value = []
     }
+    
+    // 开始分批处理
+    processBatch()
     
   } catch (error) {
     console.error('压缩失败:', error)
     hasError.value = true
-    errorMessage.value = '压缩失败: JSON 格式无效'
+    errorMessage.value = '压缩失败: ' + error.message
     compressedData.value = ''
     compressedBytes.value = null
     decompressedData.value = ''
-    poolValues.value = []
     compressTime.value = null
   }
 }
@@ -458,33 +382,59 @@ const handleDecompress = () => {
     hasError.value = false
     errorMessage.value = ''
     
-    // 开始计时
-    const startTime = performance.now()
-    
-    // 尝试解压缩
+    // 先执行一次获取结果
     const decompressed = wasmModule.decompress_from_base64(compressedData.value)
     
-    // 结束计时
-    const endTime = performance.now()
-    decompressTime.value = endTime - startTime
-    compressTime.value = null // 清除压缩时间，只显示最新操作时间
+    // 使用setTimeout分批执行800次测试以计算平均时间
+    const iterations = 800
+    const batchSize = 50 // 每批执行50次
+    const batches = Math.ceil(iterations / batchSize)
+    let totalElapsedTime = 0
+    let currentBatch = 0
     
-    decompressedData.value = decompressed
+    const processBatch = () => {
+      if (currentBatch < batches) {
+        const start = performance.now()
+        const startIndex = currentBatch * batchSize
+        const endIndex = Math.min(startIndex + batchSize, iterations)
+        
+        // 执行一批测试
+        for (let i = startIndex; i < endIndex; i++) {
+          wasmModule.decompress_from_base64(compressedData.value)
+        }
+        
+        const end = performance.now()
+        totalElapsedTime += (end - start)
+        currentBatch++
+        
+        // 使用setTimeout让出主线程控制权
+        setTimeout(processBatch, 0)
+      } else {
+        // 所有批次完成，更新UI
+        decompressTime.value = totalElapsedTime / iterations
+        compressTime.value = null // 清除压缩时间，只显示最新操作时间
+        
+        decompressedData.value = decompressed
+        
+        // 验证解压结果是否为有效 JSON
+        JSON.parse(decompressed)
+        
+        // 自动更新左边输入框
+        inputJson.value = decompressed
+        
+        // 重新计算压缩字节数（从 base64 解码）
+        const binaryData = Uint8Array.from(atob(compressedData.value), c => c.charCodeAt(0))
+        compressedBytes.value = binaryData
+      }
+    }
     
-    // 验证解压结果是否为有效 JSON
-    JSON.parse(decompressed)
-    
-    // 自动更新左边输入框
-    inputJson.value = decompressed
-    
-    // 重新计算压缩字节数（从 base64 解码）
-    const binaryData = Uint8Array.from(atob(compressedData.value), c => c.charCodeAt(0))
-    compressedBytes.value = binaryData
+    // 开始分批处理
+    processBatch()
     
   } catch (error) {
     console.error('解压缩失败:', error)
     hasError.value = true
-    errorMessage.value = '解压缩失败: 压缩数据无效'
+    errorMessage.value = '解压缩失败: ' + error.message
     decompressedData.value = ''
     compressedBytes.value = null
     decompressTime.value = null
