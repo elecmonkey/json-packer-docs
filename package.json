@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
-    "json-packer-wasm": "^0.1.0",
+    "json-packer-wasm": "^0.1.1",
     "vue": "^3.5.18"
   }
 }
