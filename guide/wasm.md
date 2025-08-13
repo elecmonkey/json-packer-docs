@@ -2,6 +2,10 @@
 
 JSON Packer 提供了高性能的 WebAssembly 绑定，适用于浏览器和 Node.js 环境。
 
+## 版本更新 (v0.1.1)
+
+- **体积优化**：WASM 包体积从 165KB 优化至 112KB，减小 32.1%。胶水 JavaScript 代码启用了压缩。
+
 ## 安装
 
 ```bash

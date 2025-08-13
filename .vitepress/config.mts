@@ -21,7 +21,7 @@ export default defineConfig({
       { 
         text: '快速开始',
         items: [
-          { text: '介绍', link: '/guide/' },
+          { text: '关于 JSON Packer', link: '/guide/' },
           { text: 'Rust Core', link: '/guide/rust' },
           { text: 'Node API', link: '/guide/node' },
           { text: 'WebAssembly', link: '/guide/wasm' }
@@ -44,7 +44,7 @@ export default defineConfig({
         {
           text: '快速开始',
           items: [
-            { text: '介绍', link: '/guide/' },
+            { text: '关于 JSON Packer', link: '/guide/' },
             { text: 'Rust Core', link: '/guide/rust' },
             { text: 'Node API', link: '/guide/node' },
             { text: 'WebAssembly', link: '/guide/wasm' }
