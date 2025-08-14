@@ -2,8 +2,8 @@
   <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-lg">
     <!-- 标题区域 - 减小空白 -->
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-3 border-b border-slate-200">
-      <p class="text-lg font-bold text-slate-800">Playground</p>
-      <p class="text-sm text-slate-600 mt-1">在浏览器中体验 WebAssembly 版本</p>
+      <p class="text-lg font-bold text-slate-800">{{ t.demo.title }}</p>
+      <p class="text-sm text-slate-600 mt-1">{{ t.demo.subtitle }}</p>
     </div>
     
     <!-- 压缩选项面板 -->
@@ -19,13 +19,13 @@
               @change="handleCompress" 
               class="sr-only peer">
             <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            <span class="ml-3 text-sm font-medium text-slate-700">字符串值池</span>
+            <span class="ml-3 text-sm font-medium text-slate-700">{{ t.demo.valuePool }}</span>
           </label>
         </div>
         
         <div v-if="enableValuePool" class="flex items-center gap-4">
           <div class="flex items-center gap-2">
-            <label for="pool-min-repeats" class="text-sm text-slate-600">重复次数:</label>
+            <label for="pool-min-repeats" class="text-sm text-slate-600">{{ t.demo.repeatCount }}</label>
             <input 
               id="pool-min-repeats"
               name="poolMinRepeats"
@@ -36,7 +36,7 @@
               class="w-16 px-3 py-2 text-sm border border-slate-300 rounded-lg bg-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white transition-all duration-200">
           </div>
           <div class="flex items-center gap-2">
-            <label for="pool-min-string-len" class="text-sm text-slate-600">最小长度:</label>
+            <label for="pool-min-string-len" class="text-sm text-slate-600">{{ t.demo.minLength }}</label>
             <input 
               id="pool-min-string-len"
               name="poolMinStringLen"
@@ -56,16 +56,16 @@
       <div class="p-6 lg:border-r border-slate-200">
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
-            <label for="input-json" class="font-medium text-sm text-slate-700">原始 JSON 数据</label>
+            <label for="input-json" class="font-medium text-sm text-slate-700">{{ t.demo.inputLabel }}</label>
             <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">{{ originalSize }} 字节</span>
+              <span class="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded whitespace-nowrap">{{ originalSize }} {{ t.demo.originalSize }}</span>
             </div>
           </div>
           <textarea 
             id="input-json"
             name="inputJson"
             v-model="inputJson" 
-            placeholder="输入您的JSON数据..."
+            :placeholder="t.demo.inputPlaceholder"
             class="w-full h-48 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-700 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white transition-all duration-200 shadow-sm"
             @input="handleCompress"
           ></textarea>
@@ -76,9 +76,9 @@
       <div class="p-6">
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
-            <label for="compressed-data" class="font-medium text-sm text-slate-700">压缩结果</label>
+            <label for="compressed-data" class="font-medium text-sm text-slate-700">{{ t.demo.outputLabel }}</label>
             <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-              <span class="bg-slate-100 px-2 py-1 rounded whitespace-nowrap">{{ binarySize }} 字节 / Base64 {{ base64Size }} 字节</span>
+              <span class="bg-slate-100 px-2 py-1 rounded whitespace-nowrap">{{ binarySize }} {{ t.demo.binarySize }} / {{ t.demo.base64Size }} {{ base64Size }} {{ t.demo.binarySize }}</span>
               <!-- <span class="bg-slate-100 px-2 py-1 rounded whitespace-nowrap">Base64:  字节</span> -->
             </div>
           </div>
@@ -86,7 +86,7 @@
             id="compressed-data"
             name="compressedData"
             v-model="compressedData" 
-            placeholder="压缩结果将显示在这里..."
+            :placeholder="t.demo.outputPlaceholder"
             class="w-full h-48 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-700 font-mono text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white transition-all duration-200 shadow-sm"
             @input="handleDecompress"
           ></textarea>
@@ -101,7 +101,7 @@
           <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
           </svg>
-          <span class="text-sm font-semibold text-green-700">压缩率: {{ compressionRatio }}% </span>
+          <span class="text-sm font-semibold text-green-700">{{ t.demo.compressionRatio }}: {{ compressionRatio }}% </span>
         </div>
         <div v-else-if="hasError" class="inline-flex items-center gap-2 px-6 py-3 bg-red-50 border border-red-200 rounded-lg">
           <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,14 +116,16 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <span class="text-sm font-semibold text-blue-700">
-            <span v-if="compressTime !== null">压缩用时: {{ compressTime.toFixed(2) }}ms</span>
-            <span v-if="decompressTime !== null">解压用时: {{ decompressTime.toFixed(2) }}ms</span>
+            <span v-if="compressTime !== null">{{ locale === 'zh' ? '压缩用时' : 'Compression time' }}: {{ compressTime.toFixed(2) }}ms</span>
+            <span v-if="decompressTime !== null">{{ locale === 'zh' ? '解压用时' : 'Decompression time' }}: {{ decompressTime.toFixed(2) }}ms</span>
           </span>
         </div>
       </div>
       <div class="text-xs text-slate-400 mt-3 text-center">
-        <p>💡 压缩率按二进制大小计算，Base64 编码会有约 33% 的大小膨胀。</p>
-        <p>压缩、解压均会自动运行800次取平均显示时间。</p>
+        <p v-if="locale === 'zh'">💡 压缩率按二进制大小计算，Base64 编码会有约 33% 的大小膨胀。</p>
+        <p v-else>💡 Compression ratio is calculated based on binary size. Base64 encoding adds ~33% size.</p>
+        <p v-if="locale === 'zh'">压缩、解压均会自动运行800次取平均显示时间。</p>
+        <p v-else>Both compression and decompression run 800 times automatically to show average time.</p>
       </div>
     </div>
 
@@ -133,6 +135,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useI18n } from '../composables/useI18n'
+
+// 使用 i18n
+const { t, locale } = useI18n()
 
 // 深度比较函数
 function deepEqual(a: any, b: any): boolean {
@@ -365,7 +371,7 @@ const handleCompress = () => {
   } catch (error) {
     console.error('压缩失败:', error)
     hasError.value = true
-    errorMessage.value = '压缩失败: ' + error.message
+    errorMessage.value = (locale.value === 'zh' ? '压缩失败: ' : 'Compression failed: ') + error.message
     compressedData.value = ''
     compressedBytes.value = null
     decompressedData.value = ''
@@ -434,7 +440,7 @@ const handleDecompress = () => {
   } catch (error) {
     console.error('解压缩失败:', error)
     hasError.value = true
-    errorMessage.value = '解压缩失败: ' + error.message
+    errorMessage.value = (locale.value === 'zh' ? '解压缩失败: ' : 'Decompression failed: ') + error.message
     decompressedData.value = ''
     compressedBytes.value = null
     decompressTime.value = null

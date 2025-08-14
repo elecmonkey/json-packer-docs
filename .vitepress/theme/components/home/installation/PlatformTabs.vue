@@ -6,7 +6,7 @@
       :class="[activeTab === 'rust' ? 'tab-active' : 'tab-inactive']"
       ref="rustTab"
     >
-      🦀 Rust
+      {{ t.installation.platforms.rust }}
     </button>
     <button 
       @click="$emit('update:activeTab', 'node')"
@@ -14,7 +14,7 @@
       :class="[activeTab === 'node' ? 'tab-active' : 'tab-inactive']"
       ref="nodeTab"
     >
-      📦 Node
+      {{ t.installation.platforms.node }}
     </button>
     <button 
       @click="$emit('update:activeTab', 'web')"
@@ -22,13 +22,14 @@
       :class="[activeTab === 'web' ? 'tab-active' : 'tab-inactive']"
       ref="webTab"
     >
-      🌐 WASM
+      {{ t.installation.platforms.web }}
     </button>
   </AnimatedSlider>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue'
+import { useI18n } from '../../../composables/useI18n'
 import AnimatedSlider from '../../common/AnimatedSlider.vue'
 
 interface Props {
@@ -41,6 +42,9 @@ interface Emits {
 
 const props = defineProps<Props>()
 defineEmits<Emits>()
+
+// 使用 i18n
+const { t } = useI18n()
 
 // 选项卡按钮的ref引用
 const rustTab = ref<HTMLButtonElement>()

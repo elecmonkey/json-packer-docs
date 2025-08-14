@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 桌面端：图标和文字水平布局 -->
-    <div class="hidden md:flex items-center gap-6 mb-4">
+    <div class="hidden md:flex items-center gap-3 mb-4">
       <!-- 图标 -->
       <div class="flex-shrink-0">
         <img src="/favicon.svg" alt="JSON Packer" class="w-24 h-24 lg:w-32 lg:h-32" />
@@ -9,10 +9,10 @@
       <!-- 文字内容 -->
       <div class="space-y-4">
         <h1 class="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent">
-          JSON Packer
+          {{ t.title }}
         </h1>
         <p class="text-xl lg:text-2xl text-slate-600 leading-relaxed">
-          基于 Rust 的高性能 JSON 压缩库
+          {{ t.subtitle }}
         </p>
       </div>
     </div>
@@ -26,10 +26,10 @@
       <!-- 文字内容 -->
       <div class="space-y-4 text-center">
         <h1 class="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent">
-          JSON Packer
+          {{ t.title }}
         </h1>
         <p class="text-xl text-slate-600 leading-relaxed">
-          基于 Rust 的高性能 JSON 压缩库
+          {{ t.subtitle }}
         </p>
       </div>
     </div>
@@ -37,5 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '../../../composables/useI18n'
+
 // Hero Section 组件 - 主标题和图标区域
+const { t } = useI18n()
 </script>

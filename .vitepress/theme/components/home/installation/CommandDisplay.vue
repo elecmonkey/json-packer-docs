@@ -9,7 +9,7 @@
       <button 
         @click="handleCopy"
         class="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors duration-200 rounded hover:bg-slate-100"
-        :title="copied ? '已复制!' : '复制命令'"
+        :title="copied ? (locale === 'zh' ? '已复制!' : 'Copied!') : (locale === 'zh' ? '复制命令' : 'Copy command')"
       >
         <CopyIcon :copied="copied" />
       </button>
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from '../../../composables/useI18n'
 import CopyIcon from '../../common/CopyIcon.vue'
 
 interface Props {
@@ -32,6 +33,9 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+// 使用 i18n
+const { locale } = useI18n()
+
 const copied = ref(false)
 
 const handleCopy = async () => {
@@ -43,7 +47,7 @@ const handleCopy = async () => {
     }, 2000)
     emit('copy', props.command)
   } catch (err) {
-    console.error('复制失败:', err)
+    console.error(locale.value === 'zh' ? '复制失败:' : 'Copy failed:', err)
   }
 }
 </script>

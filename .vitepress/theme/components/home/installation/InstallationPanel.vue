@@ -29,7 +29,7 @@
 
       <!-- 文档按钮区域 -->
       <a 
-        href="/guide/" 
+        :href="locale === 'zh' ? '/zh/guide/' : '/guide/'" 
         class="group md:w-32 w-full h-16 md:h-auto flex flex-row md:flex-col items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-all duration-300 no-underline"
       >
         <!-- 文档图标 -->
@@ -38,7 +38,7 @@
         </svg>
         <!-- 文档文字和箭头 -->
         <div class="flex flex-row md:flex-col items-center gap-1 md:gap-0">
-          <span class="text-sm font-medium">快速开始</span>
+          <span class="text-sm font-medium">{{ t.installation.quickStart }}</span>
           <svg class="w-4 h-4 md:mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
           </svg>
@@ -50,9 +50,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from '../../../composables/useI18n'
 import PlatformTabs from './PlatformTabs.vue'
 import PackageSelector from './PackageSelector.vue'
 import CommandDisplay from './CommandDisplay.vue'
+
+// 使用 i18n
+const { t, locale } = useI18n()
 
 // 响应式数据
 const activeTab = ref<'rust' | 'node' | 'web'>('rust')
