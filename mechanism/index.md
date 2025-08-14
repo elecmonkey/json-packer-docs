@@ -1,18 +1,18 @@
-# 工作原理
+# How it Works
 
-欢迎来到 JSON Packer 的工作原理部分。
+Welcome to the JSON Packer how-it-works section.
 
-## 内容概览
+## Content Overview
 
-- [压缩原理](./principles) - 介绍 JSON Packer 如何利用多种压缩技术来减小 JSON 数据的体积
-- [二进制格式](./binary-format) - 详细说明 JSON Packer 的二进制数据格式规范
-- [具体实现](./implementation) - 深入解析 JSON Packer 的代码实现细节
+- [Compression Principles](./principles) - Introduces how JSON Packer utilizes various compression techniques to reduce JSON data size
+- [Binary Format](./binary-format) - Detailed description of JSON Packer's binary data format specification  
+- [Implementation Details](./implementation) - In-depth analysis of JSON Packer's code implementation details
 
-## 设计理念
+## Design Philosophy
 
-JSON Packer 的核心设计理念是在保证无损压缩的前提下，最大化压缩率和处理性能。它通过分析 JSON 数据的特点，使用多种压缩技术来减少存储空间：
+JSON Packer's core design philosophy is to maximize compression ratio and processing performance while ensuring lossless compression. It analyzes the characteristics of JSON data and uses multiple compression techniques to reduce storage space:
 
-1. **类型标签** - 去除 JSON 语法冗余
-2. **霍夫曼编码** - 压缩重复键名
-3. **变长整数编码** - 优化数字存储
-4. **字符串池** - 去除重复值
+1. **Type Tags** - Remove JSON syntax redundancy
+2. **Huffman Encoding** - Compress repeated key names
+3. **Variable-length Integer Encoding** - Optimize number storage
+4. **String Pool** - Remove duplicate values

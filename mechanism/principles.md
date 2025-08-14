@@ -1,21 +1,21 @@
-# 原理
+# Principles
 
-json-packer 是一个 JSON 压缩库，它的核心思想是通过分析 JSON 数据的特点，使用多种压缩技术来减少存储空间。本文从原理角度解释它是如何工作的。
+json-packer is a JSON compression library whose core idea is to reduce storage space by analyzing the characteristics of JSON data and using multiple compression techniques. This document explains how it works from a principles perspective.
 
-## 为什么 JSON 可以被压缩
+## Why JSON Can Be Compressed
 
-JSON 数据有几个明显的特点，这些特点为压缩创造了机会：
+JSON data has several obvious characteristics that create opportunities for compression:
 
-1. **重复的键名**：在复杂的 JSON 数据中，同样的对象键会大量重复出现
-2. **冗余的类型信息**：JSON 的文本格式包含大量的引号、冒号、逗号等语法字符
-3. **重复的字符串值**：某些字符串值会在数据中重复出现
-4. **数字的低效表示**：JSON 中的数字以文本形式存储，占用空间较大
+1. **Repeated key names**: In complex JSON data, the same object keys appear repeatedly in large quantities
+2. **Redundant type information**: JSON's text format contains a lot of syntax characters like quotes, colons, commas, etc.
+3. **Repeated string values**: Certain string values appear repeatedly in the data
+4. **Inefficient number representation**: Numbers in JSON are stored in text form, taking up more space
 
-## 压缩策略
+## Compression Strategies
 
-### 1. 类型标签：去掉语法冗余
+### 1. Type Tags: Remove Syntax Redundancy
 
-JSON 的文本格式需要大量语法字符来区分不同类型：
+JSON's text format requires many syntax characters to distinguish different types:
 
 ```json
 {
@@ -26,23 +26,23 @@ JSON 的文本格式需要大量语法字符来区分不同类型：
 }
 ```
 
-在这个例子中，引号、冒号、逗号、花括号等字符占用了相当比例的空间，但实际上并不承载数据本身的信息。
+In this example, quotes, colons, commas, braces, and other characters take up a considerable proportion of space, but don't actually carry the information of the data itself.
 
-json-packer 的解决方案是为每种 JSON 类型分配一个 3 位的二进制标签：
+json-packer's solution is to assign a 3-bit binary tag for each JSON type:
 - null → 000
 - false → 001  
 - true → 010
-- 数字 → 011
-- 浮点数 → 100
-- 字符串 → 101
-- 对象 → 110
-- 数组 → 111
+- integer → 011
+- float → 100
+- string → 101
+- object → 110
+- array → 111
 
-这样，原本需要多个字符表示的类型信息，现在只需要 3 个二进制位。
+This way, type information that originally required multiple characters now only needs 3 binary bits.
 
-### 2. 霍夫曼编码：压缩重复键名
+### 2. Huffman Encoding: Compress Repeated Key Names
 
-考虑这样的 JSON 数据：
+Consider this JSON data:
 
 ```json
 [
@@ -52,33 +52,33 @@ json-packer 的解决方案是为每种 JSON 类型分配一个 3 位的二进�
 ]
 ```
 
-在这个数据中，"name"、"age"、"city" 这三个键各出现了 3 次。如果用常规方式存储，每次都要完整保存这些字符串。
+In this data, the three keys "name", "age", and "city" each appear 3 times. If stored conventionally, these strings would need to be saved completely each time.
 
-霍夫曼编码的思路是：**出现频率高的键用更短的编码，出现频率低的键用较长的编码**。
+The idea of Huffman encoding is: **keys with high frequency use shorter codes, keys with low frequency use longer codes**.
 
-具体过程：
-1. **统计频率**：遍历整个 JSON，统计每个键出现的次数
-2. **构建霍夫曼树**：根据频率构建二叉树，频率高的键距离根节点更近
-3. **分配编码**：树的路径就是编码，左子树为 0，右子树为 1
+Specific process:
+1. **Count frequency**: Traverse the entire JSON and count the number of occurrences of each key
+2. **Build Huffman tree**: Build a binary tree based on frequency, with high-frequency keys closer to the root node
+3. **Assign codes**: The path of the tree is the code, left subtree is 0, right subtree is 1
 
-比如上面的例子中：
-- "name"、"age"、"city" 各出现 3 次，可能被分配 1-2 位的短编码
-- 如果有其他只出现 1 次的键，会被分配更长的编码
+For example, in the above case:
+- "name", "age", "city" each appear 3 times and might be assigned 1-2 bit short codes
+- If there are other keys that appear only once, they would be assigned longer codes
 
-这样，原本每个键需要 4-5 个字节，现在可能只需要 1-2 个二进制位。
+This way, keys that originally needed 4-5 bytes might now only need 1-2 binary bits.
 
-### 3. 变长整数编码：压缩数字
+### 3. Variable-Length Integer Encoding: Compress Numbers
 
-JSON 中的数字以文本形式存储效率很低。比如数字 `123` 在 JSON 中需要 3 个字节，但用二进制只需要 1 个字节就能表示 0-255 的范围。
+Numbers stored in text form in JSON are very inefficient. For example, the number `123` requires 3 bytes in JSON, but in binary only needs 1 byte to represent the range 0-255.
 
-json-packer 使用 LEB128（Little Endian Base 128）编码：
-- **小数字用更少的字节**：0-127 只需要 1 字节，128-16383 需要 2 字节
-- **大数字自动扩展**：根据数字大小动态决定使用几个字节
-- **区分有符号和无符号**：正整数和负整数使用不同的编码策略
+json-packer uses LEB128 (Little Endian Base 128) encoding:
+- **Small numbers use fewer bytes**: 0-127 only needs 1 byte, 128-16383 needs 2 bytes
+- **Large numbers automatically expand**: Dynamically decide how many bytes to use based on number size
+- **Distinguish signed and unsigned**: Positive integers and negative integers use different encoding strategies
 
-### 4. 字符串池：去重复值
+### 4. String Pool: Deduplicate Values
 
-在某些 JSON 数据中，会有大量重复的字符串值：
+In some JSON data, there are many repeated string values:
 
 ```json
 [
@@ -89,118 +89,118 @@ json-packer 使用 LEB128（Little Endian Base 128）编码：
 ]
 ```
 
-如果每次都完整存储这些重复的字符串，会造成很大浪费。
+Storing these repeated strings completely each time would cause great waste.
 
-字符串池的思路是：
-1. **收集重复字符串**：找出数据中重复出现且足够长的字符串
-2. **建立索引映射**：将这些字符串提取到一个"池子"中，每个分配一个 ID
-3. **引用代替内容**：在原始位置存储 ID 引用，而不是完整字符串
+The idea of string pool is:
+1. **Collect repeated strings**: Find strings in the data that appear repeatedly and are long enough
+2. **Establish index mapping**: Extract these strings into a "pool" and assign each an ID
+3. **References replace content**: Store ID references in original positions instead of complete strings
 
-比如 "Successfully connected to server" 这个 30 字节的字符串，可能只用 1 个字节的 ID 就能引用。
+For example, "Successfully connected to server", this 30-byte string, might only need 1 byte ID to reference.
 
-## 霍夫曼编码的理论最优
+## Theoretical Optimum of Huffman Encoding
 
-理论上，霍夫曼编码的收益计算应该考虑原来字符串的长度。最优的霍夫曼编码应该基于频率和原长度的乘积来构建，因为：
+Theoretically, the benefit calculation of Huffman encoding should consider the length of the original string. The optimal Huffman encoding should be built based on the product of frequency and original length, because:
 
-1. 一个键的压缩收益 = 原长度 × 出现次数 - 编码长度 × 出现次数
-2. 因此，我们应该优先为"原长度 × 出现次数"值最大的键分配最短的编码
+1. Compression benefit of a key = original length × occurrence count - encoding length × occurrence count
+2. Therefore, we should prioritize assigning the shortest encoding to keys with the largest "original length × occurrence count" value
 
-例如，如果有一个键"extraLongKeyName"出现了2次，而"key"出现了3次：
-- "extraLongKeyName"的理论收益权重为 16 × 2 = 32
-- "key"的理论收益权重为 3 × 3 = 9
+For example, if there is a key "extraLongKeyName" that appears 2 times, and "key" appears 3 times:
+- "extraLongKeyName" has a theoretical benefit weight of 16 × 2 = 32
+- "key" has a theoretical benefit weight of 3 × 3 = 9
 
-按理论最优，我们应该优先为"extraLongKeyName"分配更短的编码，因为它能带来更大的总收益。
+According to theoretical optimum, we should prioritize assigning shorter encoding to "extraLongKeyName" because it can bring greater total benefit.
 
-但在实践中我们发现，对于大多数 JSON 数据场景，简单按频率进行霍夫曼编码已经能够获得很好的压缩效果。这主要有以下几个原因：
+But in practice we found that for most JSON data scenarios, simple Huffman encoding based on frequency can already achieve good compression results. This is mainly due to the following reasons:
 
-### 1. JSON键名的特点
+### 1. Characteristics of JSON Key Names
 
-**键名通常较短且长度相近**：大多数JSON键名长度在3-15个字符之间，差异不大。即使按理论最优方案，长键和短键分配的编码长度差异也并不显著。
+**Key names are usually short and similar in length**: Most JSON key names are 3-15 characters long, with little difference. Even with the theoretical optimal scheme, the difference in encoding lengths assigned to long and short keys is not significant.
 
-**高频键往往本身就是短键**：如"id"、"name"、"type"等常见键既是高频键又是短键，所以简单按频率的方案与理论最优方案结果相近。
+**High-frequency keys are often short keys themselves**: Common keys like "id", "name", "type" are both high-frequency and short keys, so the simple frequency-based scheme is close to the theoretical optimal scheme.
 
-### 2. 实现复杂度和性能考虑
+### 2. Implementation Complexity and Performance Considerations
 
-按理论最优方案需要额外计算和存储每个键的长度信息，增加了算法复杂度和编码时间。在绝大多数场景下差异不大的情况下，没有在最终的设计中引入。
+The theoretical optimal scheme requires additional calculation and storage of length information for each key, increasing algorithm complexity and encoding time. Since the difference is not significant in most scenarios, it was not introduced in the final design.
 
 
-## 为什么字符串池设计成可选的
+## Why String Pool is Designed as Optional
 
-字符串池并不总是有益的，这取决于数据的特征：
+String pool is not always beneficial, it depends on the characteristics of the data:
 
-### 1. 数据特征决定收益
+### 1. Data Characteristics Determine Benefits
 
-**有利场景**：
-- 日志数据：大量重复的状态码、错误信息
-- 配置数据：重复的路径、URL、标识符
-- 数据库导出：重复的分类、标签、描述
+**Beneficial scenarios**:
+- Log data: Large amounts of repeated status codes and error messages
+- Configuration data: Repeated paths, URLs, identifiers
+- Database exports: Repeated categories, tags, descriptions
 
-**不利场景**：
-- 用户生成内容：评论、消息等，重复度低
-- 时间序列数据：主要是数字，字符串较少
-- 小数据量：构建字符串池的开销可能大于收益
+**Unfavorable scenarios**:
+- User-generated content: Comments, messages, etc., with low repetition
+- Time series data: Mainly numbers with fewer strings
+- Small data volumes: The overhead of building a string pool may be greater than the benefits
 
-### 2. 性能权衡
+### 2. Performance Trade-offs
 
-**启用字符串池的成本**：
-- 需要遍历整个数据两次（第一次统计，第二次压缩）
-- 需要额外内存存储字符串池和索引映射
-- 压缩和解压速度会变慢
+**Cost of enabling string pool**:
+- Need to traverse the entire data twice (first time for statistics, second time for compression)
+- Need extra memory to store string pool and index mapping
+- Compression and decompression speed will be slower
 
-**禁用字符串池的优势**：
-- 只需遍历数据一次
-- 内存占用更少
-- 处理速度更快
-- 代码逻辑更简单
+**Advantages of disabling string pool**:
+- Only need to traverse data once
+- Less memory usage
+- Faster processing speed
+- Simpler code logic
 
-### 3. 灵活性考虑
+### 3. Flexibility Considerations
 
-不同的应用场景对压缩率和性能的要求不同：
+Different application scenarios have different requirements for compression ratio and performance:
 
-- **实时通信**：延迟敏感，可能选择 v1 格式获得更快的处理速度
-- **数据存储**：空间敏感，可能选择 v2 格式获得更高的压缩率
-- **批处理**：可以容忍较高的处理时间，倾向于选择 v2 格式
-- **嵌入式设备**：内存受限，可能选择 v1 格式
+- **Real-time communication**: Latency sensitive, might choose v1 format for faster processing speed
+- **Data storage**: Space sensitive, might choose v2 format for higher compression ratio
+- **Batch processing**: Can tolerate higher processing time, tends to choose v2 format
+- **Embedded devices**: Memory constrained, might choose v1 format
 
-### 4. 自适应策略
+### 4. Adaptive Strategy
 
-json-packer 允许用户根据数据特征进行配置：
+json-packer allows users to configure based on data characteristics:
 
 ```rust
 CompressOptions {
-    enable_value_pool: true,      // 是否启用字符串池
-    pool_min_repeats: 3,          // 至少重复 3 次才加入池
-    pool_min_string_len: 8,       // 长度至少 8 字节才考虑
+    enable_value_pool: true,      // Whether to enable string pool
+    pool_min_repeats: 3,          // Must repeat at least 3 times to join pool
+    pool_min_string_len: 8,       // Must be at least 8 bytes long to consider
 }
 ```
 
-这种设计让用户可以根据实际数据进行调优：
-- 如果数据中短字符串居多，可以提高 `pool_min_string_len`
-- 如果内存受限，可以提高 `pool_min_repeats` 来减少池的大小
-- 如果确定没有重复字符串，直接关闭 `enable_value_pool`
+This design allows users to tune based on actual data:
+- If data contains mostly short strings, can increase `pool_min_string_len`
+- If memory is constrained, can increase `pool_min_repeats` to reduce pool size
+- If certain there are no repeated strings, directly disable `enable_value_pool`
 
-## 位级优化
+## Bit-Level Optimization
 
-为了榨取最后的压缩空间，json-packer 在位级别进行优化：
+To squeeze out the last compression space, json-packer performs optimization at the bit level:
 
-### 1. 紧凑的位打包
-- 类型标签只用 3 位，不浪费整个字节
-- 布尔值用 1 位表示，而不是整个字节
-- 多个小的信息可以打包在同一个字节中
+### 1. Compact Bit Packing
+- Type tags only use 3 bits, not wasting an entire byte
+- Boolean values use 1 bit instead of an entire byte
+- Multiple small pieces of information can be packed in the same byte
 
-### 2. 字节对齐处理
-- 在需要的时候进行字节对齐，避免读取错误
-- 智能的位缓冲区管理，减少内存分配
+### 2. Byte Alignment Processing
+- Perform byte alignment when needed to avoid read errors
+- Smart bit buffer management to reduce memory allocation
 
-## 确定性设计
+## Deterministic Design
 
-为了保证相同的输入总是产生相同的输出，json-packer 在所有涉及排序的地方都使用确定性策略：
+To ensure the same input always produces the same output, json-packer uses deterministic strategies in all sorting operations:
 
-1. **键统计排序**：按字典序排序，而不是依赖哈希表的随机顺序
-2. **霍夫曼树构建**：在频率相同时，按符号顺序决定优先级
-3. **字符串池排序**：先按频率降序，再按字典序升序
+1. **Key statistics sorting**: Sort by lexicographical order instead of relying on hash table's random order
+2. **Huffman tree construction**: When frequencies are equal, decide priority by symbol order
+3. **String pool sorting**: First by frequency descending, then by lexicographical order ascending
 
-这样设计的好处是：
-- 便于调试和测试
-- 支持增量更新和差异比较
-- 提高缓存命中率
+Benefits of this design:
+- Easy to debug and test
+- Support incremental updates and difference comparison
+- Improve cache hit rate

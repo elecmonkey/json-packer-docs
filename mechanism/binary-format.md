@@ -1,81 +1,81 @@
-# 二进制数据格式
+# Binary Data Format
 
-本文档详细介绍 json-packer 的二进制数据格式，以及它如何表示 JSON 的树状层级结构。
+This document describes in detail the binary data format of json-packer and how it represents JSON's tree-like hierarchical structure.
 
-## 整体数据布局
+## Overall Data Layout
 
-json-packer 的二进制格式采用以下整体布局：
+The binary format of json-packer adopts the following overall layout:
 
 ```
 ┌─────────────┬─────────────┬─────────────┬─────────────┐
-│   包头区     │   字典表     │   值池区     │   数据区     │
+│   Header    │ Dictionary  │String Pool  │    Data     │
 │  (Header)   │(Dictionary) │(String Pool)│   (Data)    │
 └─────────────┴─────────────┴─────────────┴─────────────┘
 ```
 
-### 包头区 (Header)
+### Header
 
 ```
-MAGIC(4字节) + VERSION(1字节) + DICT_LEN(变长) + POOL_LEN(变长)
+MAGIC(4 bytes) + VERSION(1 byte) + DICT_LEN(variable) + POOL_LEN(variable)
 ```
 
 - **MAGIC**: `0x4A 0x43 0x50 0x52` ("JCPR")
-- **VERSION**: `0x01` (v1格式) 或 `0x02` (v2格式)
-- **DICT_LEN**: 字典表中键的数量 (ULEB128编码)
-- **POOL_LEN**: 字符串池中条目数量 (ULEB128编码，v1格式时为0)
+- **VERSION**: `0x01` (v1 format) or `0x02` (v2 format)
+- **DICT_LEN**: Number of keys in dictionary table (ULEB128 encoded)
+- **POOL_LEN**: Number of entries in string pool (ULEB128 encoded, 0 for v1 format)
 
-### 字典表 (Dictionary)
+### Dictionary
 
-存储所有 JSON 对象键及其频率，用于构建霍夫曼编码：
+Stores all JSON object keys and their frequencies for building Huffman encoding:
 
 ```
-KEY_COUNT(变长) + [KEY_ENTRY1] + [KEY_ENTRY2] + ...
+KEY_COUNT(variable) + [KEY_ENTRY1] + [KEY_ENTRY2] + ...
 ```
 
-每个 KEY_ENTRY 格式：
+Each KEY_ENTRY format:
 ```
-KEY_LEN(变长) + KEY_BYTES + FREQ(变长)
+KEY_LEN(variable) + KEY_BYTES + FREQ(variable)
 ```
 
-### 值池区 (String Pool) - 仅v2格式
+### String Pool - v2 format only
 
-存储重复的字符串值：
+Stores repeated string values:
 
 ```
 [POOL_ENTRY1] + [POOL_ENTRY2] + ...
 ```
 
-每个 POOL_ENTRY 格式：
+Each POOL_ENTRY format:
 ```
-STRING_TAG(3位) + STR_LEN(变长) + STR_BYTES
+STRING_TAG(3 bits) + STR_LEN(variable) + STR_BYTES
 ```
 
-### 数据区 (Data)
+### Data Section
 
-存储实际的 JSON 值，使用递归的树状结构表示。
+Stores actual JSON values using recursive tree-like structure representation.
 
-## JSON 树状结构的二进制表示
+## Binary Representation of JSON Tree Structure
 
-### 基本原理
+### Basic Principle
 
-JSON 的树状结构通过**递归编码**来表示。每个 JSON 值都以一个 3 位的类型标签开始，然后根据类型跟随相应的数据。
+JSON's tree structure is represented through **recursive encoding**. Each JSON value starts with a 3-bit type tag, followed by corresponding data according to the type.
 
-### 类型标签 (3位)
+### Type Tags (3 bits)
 
 ```
 000 → null
 001 → false  
 010 → true
-011 → 整数
-100 → 浮点数
-101 → 字符串
-110 → 对象
-111 → 数组
+011 → integer
+100 → float
+101 → string
+110 → object
+111 → array
 ```
 
-### 各类型的编码格式
+### Encoding Format for Each Type
 
-#### 1. 简单值
+#### 1. Simple Values
 
 ```
 null:  [000]
@@ -83,82 +83,82 @@ false: [001]
 true:  [010]
 ```
 
-#### 2. 整数
+#### 2. Integer
 
 ```
-[011] + IS_UNSIGNED(1位) + VALUE(变长)
+[011] + IS_UNSIGNED(1 bit) + VALUE(variable)
 ```
 
-- IS_UNSIGNED=0: 有符号整数，使用 SLEB128 编码
-- IS_UNSIGNED=1: 无符号整数，使用 ULEB128 编码
+- IS_UNSIGNED=0: Signed integer, using SLEB128 encoding
+- IS_UNSIGNED=1: Unsigned integer, using ULEB128 encoding
 
-#### 3. 浮点数
-
-```
-[100] + IEEE754_BITS(64位)
-```
-
-#### 4. 字符串
-
-**v1 格式:**
-```
-[101] + LENGTH(变长) + UTF8_BYTES
-```
-
-**v2 格式:**
-```
-[101] + IS_POOL_REF(1位) + DATA
-```
-
-- IS_POOL_REF=0: `LENGTH(变长) + UTF8_BYTES`
-- IS_POOL_REF=1: `POOL_ID(变长)`
-
-#### 5. 数组
+#### 3. Float
 
 ```
-[111] + COUNT(变长) + ELEMENT1 + ELEMENT2 + ...
+[100] + IEEE754_BITS(64 bits)
 ```
 
-每个 ELEMENT 都是完整的递归编码的 JSON 值。
+#### 4. String
 
-#### 6. 对象
+**v1 format:**
+```
+[101] + LENGTH(variable) + UTF8_BYTES
+```
+
+**v2 format:**
+```
+[101] + IS_POOL_REF(1 bit) + DATA
+```
+
+- IS_POOL_REF=0: `LENGTH(variable) + UTF8_BYTES`
+- IS_POOL_REF=1: `POOL_ID(variable)`
+
+#### 5. Array
 
 ```
-[110] + COUNT(变长) + (KEY1 + VALUE1) + (KEY2 + VALUE2) + ...
+[111] + COUNT(variable) + ELEMENT1 + ELEMENT2 + ...
 ```
 
-- KEY: 霍夫曼编码的键名
-- VALUE: 递归编码的 JSON 值
+Each ELEMENT is a complete recursively encoded JSON value.
 
-## 具体示例
+#### 6. Object
 
-### 示例 1: 简单对象
+```
+[110] + COUNT(variable) + (KEY1 + VALUE1) + (KEY2 + VALUE2) + ...
+```
 
-**原始 JSON:**
+- KEY: Huffman encoded key name
+- VALUE: Recursively encoded JSON value
+
+## Specific Examples
+
+### Example 1: Simple Object
+
+**Original JSON:**
 ```json
 {"name": "Alice", "age": 25}
 ```
 
-**编码过程:**
+**Encoding process:**
 
-1. **字典表构建:**
-   - "name": 频率 1
-   - "age": 频率 1
-   - 霍夫曼编码: "age"→`0`, "name"→`1`
+1. **Dictionary table construction:**
+   - "name": frequency 1
+   - "age": frequency 1
+   - Huffman encoding: "age"→`0`, "name"→`1`
 
-2. **数据区编码:**
+2. **Data section encoding:**
 ```
-[110]           # 对象标签
-[10]            # 对象有2个键值对 (ULEB128: 2 = 0x02 = 0b00000010)
-[0]             # "age" 的霍夫曼编码
-[011][1][11001] # 整数25: 标签+无符号+ULEB128(25)
-[1]             # "name" 的霍夫曼编码  
-[101][101][Alice...] # 字符串"Alice": 标签+长度5+UTF8字节
+[110]           # Object tag
+[10]            # Object has 2 key-value pairs (ULEB128: 2 = 0x02 = 0b00000010)
+[0]             # Huffman encoding of "age"
+[011][1][11001] # Integer 25: tag+unsigned+ULEB128(25)
+[1]             # Huffman encoding of "name"  
+[101][101][Alice...] # String "Alice": tag+length 5+UTF8 bytes
 ```
 
-### 示例 2: 嵌套结构
+### Example 2: Nested Structure
 
-**原始 JSON:**
+**Original JSON:**
 ```json
 {
   "user": {
@@ -171,33 +171,33 @@ true:  [010]
 }
 ```
 
-**编码后的树状结构:**
+**Encoded tree structure:**
 
 ```
 ROOT_OBJECT [110]
 ├── COUNT: 2
-├── KEY: "active" (霍夫曼编码)
+├── KEY: "active" (Huffman encoded)
 ├── VALUE: true [010]
-├── KEY: "user" (霍夫曼编码)  
+├── KEY: "user" (Huffman encoded)  
 └── VALUE: NESTED_OBJECT [110]
     ├── COUNT: 2
-    ├── KEY: "name" (霍夫曼编码)
+    ├── KEY: "name" (Huffman encoded)
     ├── VALUE: "Bob" [101][3][B][o][b]
-    ├── KEY: "profile" (霍夫曼编码)
+    ├── KEY: "profile" (Huffman encoded)
     └── VALUE: DEEP_OBJECT [110]
         ├── COUNT: 1
-        ├── KEY: "age" (霍夫曼编码)
+        ├── KEY: "age" (Huffman encoded)
         └── VALUE: 30 [011][1][11110]
 ```
 
-### 示例 3: 数组结构
+### Example 3: Array Structure
 
-**原始 JSON:**
+**Original JSON:**
 ```json
 [1, "hello", null, {"x": 5}]
 ```
 
-**编码结构:**
+**Encoded structure:**
 ```
 ARRAY [111]
 ├── COUNT: 4
@@ -206,22 +206,22 @@ ARRAY [111]
 ├── ELEMENT3: null [000]
 └── ELEMENT4: OBJECT [110]
     ├── COUNT: 1
-    ├── KEY: "x" (霍夫曼编码)
+    ├── KEY: "x" (Huffman encoded)
     └── VALUE: 5 [011][1][101]
 ```
 
-## 递归解析过程
+## Recursive Parsing Process
 
-### 编码过程
+### Encoding Process
 
-1. **预处理阶段:**
-   - 遍历整个 JSON 树，统计所有对象键的频率
-   - 构建霍夫曼编码表
-   - (v2格式) 统计字符串值，构建字符串池
+1. **Preprocessing stage:**
+   - Traverse the entire JSON tree and count frequencies of all object keys
+   - Build Huffman encoding table
+   - (v2 format) Count string values and build string pool
 
-2. **写入阶段:**
-   - 写入包头、字典表、值池
-   - 从根节点开始递归编码：
+2. **Writing stage:**
+   - Write header, dictionary table, value pool
+   - Start recursive encoding from root node:
      ```rust
      fn encode_value(value: &Value, writer: &mut BitWriter, huffman: &HuffmanCodec) {
          match value {
@@ -230,30 +230,30 @@ ARRAY [111]
                  writer.write_uleb128(map.len());
                  for (key, val) in map {
                      huffman.write_key_code(key, writer);
-                     encode_value(val, writer, huffman); // 递归!
+                     encode_value(val, writer, huffman); // Recursive!
                  }
              }
              Value::Array(arr) => {
                  writer.write_bits(tag::ARRAY, 3);
                  writer.write_uleb128(arr.len());
                  for item in arr {
-                     encode_value(item, writer, huffman); // 递归!
+                     encode_value(item, writer, huffman); // Recursive!
                  }
              }
-             // ... 其他类型
+             // ... other types
          }
      }
      ```
 
-### 解码过程
+### Decoding Process
 
-1. **初始化阶段:**
-   - 读取包头，获取版本和长度信息
-   - 读取字典表，重建霍夫曼编码表
-   - (v2格式) 读取字符串池
+1. **Initialization stage:**
+   - Read header to get version and length information
+   - Read dictionary table and rebuild Huffman encoding table
+   - (v2 format) Read string pool
 
-2. **解析阶段:**
-   - 从根节点开始递归解析：
+2. **Parsing stage:**
+   - Start recursive parsing from root node:
      ```rust
      fn decode_value(reader: &mut BitReader, huffman: &HuffmanCodec) -> Value {
          let tag = reader.read_bits(3);
@@ -263,7 +263,7 @@ ARRAY [111]
                  let mut map = Map::new();
                  for _ in 0..count {
                      let key = huffman.decode_key(reader);
-                     let val = decode_value(reader, huffman); // 递归!
+                     let val = decode_value(reader, huffman); // Recursive!
                      map.insert(key, val);
                  }
                  Value::Object(map)
@@ -272,49 +272,49 @@ ARRAY [111]
                  let count = reader.read_uleb128();
                  let mut arr = Vec::new();
                  for _ in 0..count {
-                     arr.push(decode_value(reader, huffman)); // 递归!
+                     arr.push(decode_value(reader, huffman)); // Recursive!
                  }
                  Value::Array(arr)
              }
-             // ... 其他类型
+             // ... other types
          }
      }
      ```
 
-## 树状结构的保持机制
+## Tree Structure Preservation Mechanism
 
-### 1. 深度优先遍历
+### 1. Depth-First Traversal
 
-编码和解码都采用深度优先的顺序，确保树状结构的完整性：
-
-```
-原始树:        编码顺序:       解码顺序:
-  A             1. A           1. 读到A(对象)
- / \            2. B           2. 读到B(字符串)  
-B   C           3. C           3. 读到C(数组)
-   /|\          4. D           4. 读到D(数字)
-  D E F         5. E           5. 读到E(数字)
-                6. F           6. 读到F(数字)
-```
-
-### 2. 长度前缀
-
-对于容器类型（对象、数组），总是先写入元素数量，这样解码器知道需要读取多少个子元素：
+Both encoding and decoding use depth-first order to ensure tree structure integrity:
 
 ```
-对象编码: [对象标签] [键值对数量] [键值对1] [键值对2] ...
-数组编码: [数组标签] [元素数量] [元素1] [元素2] ...
+Original tree:  Encoding order:  Decoding order:
+  A             1. A             1. Read A(object)
+ / \            2. B             2. Read B(string)  
+B   C           3. C             3. Read C(array)
+   /|\          4. D             4. Read D(number)
+  D E F         5. E             5. Read E(number)
+                6. F             6. Read F(number)
 ```
 
-### 3. 递归边界
+### 2. Length Prefix
 
-每个值的编码都是自包含的，递归有明确的边界：
-- 简单值（null、布尔、数字、字符串）：没有子节点，递归终止
-- 容器值（对象、数组）：有明确的子元素数量，递归有界
+For container types (objects, arrays), always write the number of elements first, so the decoder knows how many child elements to read:
 
-### 4. 位流同步
+```
+Object encoding: [object tag] [key-value pair count] [key-value pair 1] [key-value pair 2] ...
+Array encoding: [array tag] [element count] [element 1] [element 2] ...
+```
 
-使用位流确保编码和解码的同步：
-- 编码器按顺序写入位流
-- 解码器按相同顺序读取位流
-- 变长编码确保边界清晰
+### 3. Recursive Boundaries
+
+Each value's encoding is self-contained with clear recursive boundaries:
+- Simple values (null, boolean, number, string): No child nodes, recursion terminates
+- Container values (object, array): Clear number of child elements, recursion is bounded
+
+### 4. Bitstream Synchronization
+
+Use bitstream to ensure synchronization between encoding and decoding:
+- Encoder writes to bitstream in order
+- Decoder reads from bitstream in the same order
+- Variable-length encoding ensures clear boundaries
