@@ -1,10 +1,14 @@
 import { defineConfig } from 'vitepress'
 import tailwindcss from '@tailwindcss/vite'
+import llmstxt from 'vitepress-plugin-llms'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "JSON Packer",
   description: "High-performance JSON compression library built with Rust",
+  vite: {
+    plugins: [llmstxt()]
+  },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-simple.svg' }],
     ['meta', { name: 'keywords', content: 'JSON, compression, Rust, high-performance, WebAssembly, Node.js, Web' }],
@@ -13,7 +17,7 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: '/favicon.svg' }]
   ],
   appearance: false, // 禁用夜间模式
-  
+
   locales: {
     root: {
       label: 'English',
@@ -25,7 +29,7 @@ export default defineConfig({
         logo: '/favicon-simple.svg',
         nav: [
           { text: 'Home', link: '/' },
-          { 
+          {
             text: 'Quick Start',
             items: [
               { text: 'About JSON Packer', link: '/guide/' },
@@ -35,7 +39,7 @@ export default defineConfig({
               { text: 'CLI Tool', link: '/guide/cli' }
             ]
           },
-          { 
+          {
             text: 'How it Works',
             items: [
               { text: 'Introduction', link: '/mechanism/' },
@@ -92,7 +96,7 @@ export default defineConfig({
         logo: '/favicon-simple.svg',
         nav: [
           { text: '首页', link: '/zh/' },
-          { 
+          {
             text: '快速开始',
             items: [
               { text: '关于 JSON Packer', link: '/zh/guide/' },
@@ -102,7 +106,7 @@ export default defineConfig({
               { text: '命令行工具', link: '/zh/guide/cli' }
             ]
           },
-          { 
+          {
             text: '工作原理',
             items: [
               { text: '介绍', link: '/zh/mechanism/' },
