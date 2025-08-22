@@ -31,7 +31,8 @@ export default defineConfig({
               { text: 'About JSON Packer', link: '/guide/' },
               { text: 'Rust Core', link: '/guide/rust' },
               { text: 'Node API', link: '/guide/node' },
-              { text: 'WebAssembly', link: '/guide/wasm' }
+              { text: 'WebAssembly', link: '/guide/wasm' },
+              { text: 'CLI Tool', link: '/guide/cli' }
             ]
           },
           { 
@@ -54,7 +55,8 @@ export default defineConfig({
                 { text: 'About JSON Packer', link: '/guide/' },
                 { text: 'Rust Core', link: '/guide/rust' },
                 { text: 'Node API', link: '/guide/node' },
-                { text: 'WebAssembly', link: '/guide/wasm' }
+                { text: 'WebAssembly', link: '/guide/wasm' },
+                { text: 'CLI Tool', link: '/guide/cli' }
               ]
             }
           ],
@@ -96,7 +98,8 @@ export default defineConfig({
               { text: '关于 JSON Packer', link: '/zh/guide/' },
               { text: 'Rust Core', link: '/zh/guide/rust' },
               { text: 'Node API', link: '/zh/guide/node' },
-              { text: 'WebAssembly', link: '/zh/guide/wasm' }
+              { text: 'WebAssembly', link: '/zh/guide/wasm' },
+              { text: '命令行工具', link: '/zh/guide/cli' }
             ]
           },
           { 
@@ -119,7 +122,8 @@ export default defineConfig({
                 { text: '关于 JSON Packer', link: '/zh/guide/' },
                 { text: 'Rust Core', link: '/zh/guide/rust' },
                 { text: 'Node API', link: '/zh/guide/node' },
-                { text: 'WebAssembly', link: '/zh/guide/wasm' }
+                { text: 'WebAssembly', link: '/zh/guide/wasm' },
+                { text: '命令行工具', link: '/zh/guide/cli' }
               ]
             }
           ],

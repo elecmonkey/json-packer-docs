@@ -15,6 +15,7 @@ JSON Packer 是一个专为高性能 JSON 数据压缩而设计的库，采用 R
  - [Rust 平台](./rust)
  - [Node.js 平台](./node)
  - [WebAssembly 平台](./wasm)
+ - [命令行工具](./cli)
 
 ## 核心特性
 

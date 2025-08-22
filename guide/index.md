@@ -15,6 +15,7 @@ JSON Packer is a library designed specifically for high-performance JSON data co
  - [Rust Platform](./rust)
  - [Node.js Platform](./node)
  - [WebAssembly Platform](./wasm)
+ - [Command Line Tool](./cli)
 
 ## Core Features
 
