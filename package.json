@@ -1,9 +1,9 @@
 {
   "type": "module",
   "devDependencies": {
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.1.13",
     "vitepress": "^1.6.4",
-    "vitepress-plugin-llms": "^1.7.3"
+    "vitepress-plugin-llms": "^1.7.4"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
   "scripts": {
@@ -12,8 +12,8 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.13",
     "json-packer-wasm": "^0.1.1",
-    "vue": "^3.5.18"
+    "vue": "^3.5.21"
   }
 }
